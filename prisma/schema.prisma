@@ -12,3 +12,37 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  idx       Int      @id @default(autoincrement())
+  nickname  String   @unique @db.VarChar(100)
+  email     String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  posts     Post[]
+  comments  Comment[]
+}
+
+
+model Post {
+  idx       Int   @id @default(autoincrement())
+  title     String   @db.VarChar(100)
+  content   String?  @db.Text
+  author    User     @relation(fields: [authorIdx], references: [idx])
+  authorIdx Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  comments  Comment[]
+}
+
+model Comment {
+  idx      Int      @id @default(autoincrement())
+  content  String   @db.Text
+  post     Post     @relation(fields: [postIdx], references: [idx])
+  postIdx  Int
+  author   User     @relation(fields: [authorIdx], references: [idx])
+  authorIdx Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
